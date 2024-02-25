@@ -69,7 +69,7 @@ function App() {
   }
 
   return ( 
-    <><Routes>
+    <Routes>
       <Route path="/" element={<Layout
         search={search}
         setSearch={setSearch} />}>
@@ -89,9 +89,6 @@ function App() {
         <Route path="*" element={<Missing />} />
       </Route>
     </Routes>
-    <main className="App">
-        <Counter />
-      </main></>
   );
 }
 
