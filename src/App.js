@@ -14,8 +14,8 @@ function App() {
 
   return(
     <main className='App'>
-      <PostsList />
       <AddPostForm />
+      <PostsList />
     </main>
   );
 }
