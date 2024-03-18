@@ -1,6 +1,7 @@
 import { createSlice, nanoid, createAsyncThunk } from "@reduxjs/toolkit";
 import { sub } from 'date-fns';
 import axios from "axios";
+
 const POSTS_URL = 'https://jsonplaceholder.typicode.com/posts';
 
 const initialState = {
@@ -13,6 +14,15 @@ export const fetchPosts = createAsyncThunk('posts/fetchPosts', async () => {
     try{
         const response = await axios.get(POSTS_URL)
         return [...response.data];
+    } catch (err) {
+        return err.message;
+    }
+})
+
+export const addNewPost = createAsyncThunk('posts/addNewPost', async (initialPost) => {
+    try {
+        const response = await axios.post(POSTS_URL, initialPost)
+        return response.data
     } catch (err) {
         return err.message;
     }
@@ -54,37 +64,46 @@ const postsSlice = createSlice({
         }
     },
     extraReducers(builder){
-        builder
-            .addCase(fetchPosts.pending, (state, action) => {
-                state.status = 'loading'
-            })
-            .addCase(fetchPosts.fulfilled, (state, action) => {
-                state.status = 'succeeded'
-                //Adding date and reactions
-                let min = 1;
-                const loadedPosts = action.payload.map(post => {
-                    post.date = sub(new Date(), { minutes: min++ }).toISOString()
-                    post.reactions = {
-                        thumbsUp: 0,
-                        wow: 0,
-                        heart: 0,
-                        rocket: 0,
-                        coffee: 0
-                    }
-                    return post;
-                });
+    builder
+        .addCase(fetchPosts.pending, (state, action) => {
+            state.status = 'loading'
+        })
+        .addCase(fetchPosts.fulfilled, (state, action) => {
+            state.status = 'succeeded'
+            //Adding date and reactions
+            let min = 1;
+            const loadedPosts = action.payload.map(post => {
+                post.date = sub(new Date(), { minutes: min++ }).toISOString()
+                post.reactions = {
+                    thumbsUp: 0,
+                    wow: 0,
+                    heart: 0,
+                    rocket: 0,
+                    coffee: 0
+                }
+                return post;
+            });
 
-                //Add any fetched posts to the Array
-                state.posts = state.posts.concat(loadedPosts)
-            })
-            .addCase(fetchPosts.rejected, (state, action) => {
-                state.status = 'failed'
-                state.error = action.error.message
-            })
-            // .addCase(addNewPost.fullfilled, (state, action) => {
-                
-            // })
-
+            //Add any fetched posts to the Array
+            state.posts = state.posts.concat(loadedPosts)
+        })
+        .addCase(fetchPosts.rejected, (state, action) => {
+            state.status = 'failed'
+            state.error = action.error.message
+        })
+        .addCase(addNewPost.fulfilled, (state, action) => {
+            action.payload.userId = Number(action.payload.userId)
+            action.payload.date = new Date().toISOString();
+            action.payload.reactions = {
+                thumbsUp: 0,
+                wow: 0,
+                heart: 0,
+                rocket: 0,
+                coffee: 0
+            }
+            console.log(action.payload)
+            state.posts.push(action.payload)
+        })
     }
 })
 
