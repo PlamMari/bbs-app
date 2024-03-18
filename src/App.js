@@ -9,6 +9,7 @@ import Layout from './components/Layout';
 import PostsList from './features/posts/PostsList';
 import AddPostForm from './features/posts/AddPostForm';
 import SinglePostPage from './features/posts/SinglePostPage';
+import EditPostForm from './features/posts/EditPostForm';
 
 function App() {
 
@@ -22,10 +23,11 @@ function App() {
 
             <Route path="post">
               <Route index element={<AddPostForm />} />
-              <Route path=":id" element={<SinglePostPage
+              <Route path=":postId" element={<SinglePostPage
                 // posts={posts}
                 // handleDelete={handleDelete}
                 />} />
+              <Route path=":edit/:postId" element={<SinglePostPage />} />              
             </Route>
             {/* <Route path="about" element={<About />} />
             <Route path="*" element={<Missing />} /> */}

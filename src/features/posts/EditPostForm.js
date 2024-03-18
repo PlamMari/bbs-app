@@ -1,16 +1,15 @@
-import {React, useState} from 'react'
+import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { selectPostsById, updatePost } from './postsSlice'
+import { selectPostById, updatePost, deletePost } from './postsSlice'
 import { useParams, useNavigate } from 'react-router-dom'
 
-import { selectAllUsers } from '../users/usersSlice'
+import { selectAllUsers } from "../users/usersSlice";
 
 const EditPostForm = () => {
-
-    const {postId} = useParams()
+    const { postId } = useParams()
     const navigate = useNavigate()
 
-    const post = useSelector((state) => selectPostsById(state, Number(postId)))
+    const post = useSelector((state) => selectPostById(state, Number(postId)))
     const users = useSelector(selectAllUsers)
 
     const [title, setTitle] = useState(post?.title)
@@ -20,8 +19,8 @@ const EditPostForm = () => {
 
     const dispatch = useDispatch()
 
-    if(!post) {
-        return(
+    if (!post) {
+        return (
             <section>
                 <h2>Post not found!</h2>
             </section>
@@ -30,7 +29,7 @@ const EditPostForm = () => {
 
     const onTitleChanged = e => setTitle(e.target.value)
     const onContentChanged = e => setContent(e.target.value)
-    const onAuthorChanged = e => setUserId(e.target.value)
+    const onAuthorChanged = e => setUserId(Number(e.target.value))
 
     const canSave = [title, content, userId].every(Boolean) && requestStatus === 'idle';
 
@@ -38,8 +37,7 @@ const EditPostForm = () => {
         if (canSave) {
             try {
                 setRequestStatus('pending')
-                dispatch(updatePost({ id: postId.id, title, body: content, userId, reactions: post.reactions}))
-                    .unwrap()
+                dispatch(updatePost({ id: post.id, title, body: content, userId, reactions: post.reactions })).unwrap()
 
                 setTitle('')
                 setContent('')
@@ -53,18 +51,34 @@ const EditPostForm = () => {
         }
     }
 
-    const usersOptions = user.map( user => (
+    const usersOptions = users.map(user => (
         <option
             key={user.id}
             value={user.id}
         >{user.name}</option>
-        ))
+    ))
+
+    const onDeletePostClicked = () => {
+        try {
+            setRequestStatus('pending')
+            dispatch(deletePost({ id: post.id })).unwrap()
+
+            setTitle('')
+            setContent('')
+            setUserId('')
+            navigate('/')
+        } catch (err) {
+            console.error('Failed to delete the post', err)
+        } finally {
+            setRequestStatus('idle')
+        }
+    }
 
     return (
         <section>
             <h2>Edit Post</h2>
             <form>
-                <label htmlFor="postTitle">Post Title: </label>
+                <label htmlFor="postTitle">Post Title:</label>
                 <input
                     type="text"
                     id="postTitle"
@@ -72,13 +86,12 @@ const EditPostForm = () => {
                     value={title}
                     onChange={onTitleChanged}
                 />
-                <label htmlFor='postAuthor'>Author:</label>
-                <select
-                    id="postAuthor" defaultValue={userId} onChange={onAuthorChanged}>
+                <label htmlFor="postAuthor">Author:</label>
+                <select id="postAuthor" value={userId} onChange={onAuthorChanged}>
                     <option value=""></option>
                     {usersOptions}
                 </select>
-                <label htmlFor='postContent'>Content:</label>
+                <label htmlFor="postContent">Content:</label>
                 <textarea
                     id="postContent"
                     name="postContent"
@@ -92,7 +105,12 @@ const EditPostForm = () => {
                 >
                     Save Post
                 </button>
-
+                <button className="deleteButton"
+                    type="button"
+                    onClick={onDeletePostClicked}
+                >
+                    Delete Post
+                </button>
             </form>
         </section>
     )
