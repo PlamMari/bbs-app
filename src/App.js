@@ -6,18 +6,33 @@ import Missing from './Missing';
 import { Route, Routes, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
-import Layout from './Layout';
+import Layout from './components/Layout';
 import PostsList from './features/posts/PostsList';
 import AddPostForm from './features/posts/AddPostForm';
+import SinglePostPage from './features/posts/SinglePostPage';
 
 function App() {
 
-  return(
-    <main className='App'>
-      <AddPostForm />
-      <PostsList />
-    </main>
-  );
+  return ( 
+        <Routes>
+          <Route path="/" element={<Layout
+            // search={search}
+            // setSearch={setSearch} 
+            />}>
+            <Route index element={<PostsList/>} />
+
+            <Route path="post">
+              <Route index element={<AddPostForm />} />
+              <Route path=":id" element={<SinglePostPage
+                // posts={posts}
+                // handleDelete={handleDelete}
+                />} />
+            </Route>
+            {/* <Route path="about" element={<About />} />
+            <Route path="*" element={<Missing />} /> */}
+          </Route>
+        </Routes>
+      );
 }
 
 
