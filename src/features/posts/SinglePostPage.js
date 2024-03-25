@@ -4,6 +4,7 @@ import { selectPostById } from './postsSlice'
 import PostAuthor from "./PostAuthor";
 import TimeAgo from "./TimeAgo";
 import ReactionButtons from "./ReactionButtons";
+import FavoriteButton from './FavoriteButton';
 
 import { useParams } from 'react-router-dom';
 import { Link } from 'react-router-dom';
@@ -31,6 +32,7 @@ const SinglePostPage = () => {
                 <TimeAgo timestamp={post.date} />
             </p>
             <ReactionButtons post={post} />
+            <FavoriteButton post={post} />
         </article>
     )
 }

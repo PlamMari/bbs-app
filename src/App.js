@@ -27,7 +27,7 @@ function App() {
                 // posts={posts}
                 // handleDelete={handleDelete}
                 />} />
-              <Route path=":edit/:postId" element={<SinglePostPage />} />              
+              <Route path=":edit/:postId" element={<EditPostForm />} />              
             </Route>
             {/* <Route path="about" element={<About />} />
             <Route path="*" element={<Missing />} /> */}

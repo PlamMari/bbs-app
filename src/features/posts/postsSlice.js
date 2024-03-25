@@ -64,7 +64,8 @@ const postsSlice = createSlice({
                             heart: 0,
                             rocket: 0,
                             coffee: 0
-                        }
+                        },
+                        isFavorite: false
                     }
                 }
             }
@@ -75,9 +76,16 @@ const postsSlice = createSlice({
             if (existingPost) {
                 existingPost.reactions[reaction]++
             }
+        },
+        toggleFavorite(state, action) {
+            const { postId } = action.payload
+            const existingPost = state.posts.find(post => post.id === postId)
+            if (existingPost) {
+                existingPost.isFavorite = !existingPost.isFavorite
+            }
         }
     },
-    extraReducers(builder) {
+    extraReducers (builder) {
         builder
             .addCase(fetchPosts.pending, (state, action) => {
                 state.status = 'loading'
@@ -157,10 +165,8 @@ const postsSlice = createSlice({
 export const selectAllPosts = (state) => state.posts.posts;
 export const getPostsStatus = (state) => state.posts.status;
 export const getPostsError = (state) => state.posts.error;
-
 export const selectPostById = (state, postId) =>
     state.posts.posts.find(post => post.id === postId);
-
-export const { postAdded, reactionAdded } = postsSlice.actions
+export const { postAdded, reactionAdded, toggleFavorite } = postsSlice.actions;
 
 export default postsSlice.reducer
